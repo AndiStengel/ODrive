@@ -21,19 +21,23 @@ void PwmInput::init() {
 
 //TODO: These expressions have integer division by 1MHz, so it will be incorrect for clock speeds of not-integer MHz
 #define TIM_2_5_CLOCK_HZ        TIM_APB1_CLOCK_HZ
-#define PWM_MIN_HIGH_TIME          ((TIM_2_5_CLOCK_HZ / 1000000UL) * 1000UL) // 1ms high is considered full reverse
-#define PWM_MAX_HIGH_TIME          ((TIM_2_5_CLOCK_HZ / 1000000UL) * 2000UL) // 2ms high is considered full forward
-#define PWM_MIN_LEGAL_HIGH_TIME    ((TIM_2_5_CLOCK_HZ / 1000000UL) * 500UL) // ignore high periods shorter than 0.5ms
-#define PWM_MAX_LEGAL_HIGH_TIME    ((TIM_2_5_CLOCK_HZ / 1000000UL) * 2500UL) // ignore high periods longer than 2.5ms
+#define PWM_MIN_HIGH_TIME          ((TIM_2_5_CLOCK_HZ / 1000000UL) * 100UL) // 1ms high is considered full reverse
+#define PWM_MAX_HIGH_TIME          ((TIM_2_5_CLOCK_HZ / 1000000UL) * 20000UL) // 2ms high is considered full forward
+#define PWM_MIN_LEGAL_HIGH_TIME    ((TIM_2_5_CLOCK_HZ / 1000000UL) * 50UL) // ignore high periods shorter than 0.5ms
+#define PWM_MAX_LEGAL_HIGH_TIME    ((TIM_2_5_CLOCK_HZ / 1000000UL) * 20500UL) // ignore high periods longer than 2.5ms
 #define PWM_INVERT_INPUT        false
 
 /**
  * @param channel: A channel number in [0, 3]
  */
 void handle_pulse(int channel, uint32_t high_time) {
-    if (high_time < PWM_MIN_LEGAL_HIGH_TIME || high_time > PWM_MAX_LEGAL_HIGH_TIME)
-        return;
-
+    //if (high_time < PWM_MIN_LEGAL_HIGH_TIME || high_time > PWM_MAX_LEGAL_HIGH_TIME)
+    //    return;
+    if (high_time < PWM_MIN_LEGAL_HIGH_TIME)
+        high_time = PWM_MIN_HIGH_TIME;
+    if (high_time < PWM_MAX_LEGAL_HIGH_TIME)
+        high_time = PWM_MAX_HIGH_TIME;
+    
     if (high_time < PWM_MIN_HIGH_TIME)
         high_time = PWM_MIN_HIGH_TIME;
     if (high_time > PWM_MAX_HIGH_TIME)
